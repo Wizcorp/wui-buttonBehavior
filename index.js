@@ -198,7 +198,6 @@ function buttonBehavior(button, options) {
 		}
 
 		if (current) {
-			event.preventDefault();
 			button.emit('tapend', false);
 		}
 	});
