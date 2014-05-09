@@ -11,6 +11,8 @@ wuiButtonBehavior will attach methods and events to the WuiDom element;
 var button = new WuiDom('div');
 wuiButtonBehavior(button);
 ```
+[See the full example at the end of the file](#how-to-use)
+
 
 ## Methods
 
@@ -19,8 +21,10 @@ wuiButtonBehavior(button);
 The enable method can be called to enable tap interaction.
 
 ```javascript
-wuiButtonBehavior(button);
-button.enable();
+function Button() {
+    WuiDom.call(this);
+    wuiButtonBehavior(this);
+}
 ```
 
 ### disable
@@ -48,6 +52,7 @@ Most likely used for design purpose.
 ### tapend
 
 This event occurs when the user release the WuiDom he was pressing or when the tap got cancelled.
+It receives a boolean as parameter which will be set to `true` if the tap has been cancelled.
 Most likely used for design purpose.
 
 
@@ -61,34 +66,41 @@ The enabled event is called when the tap behavior is enabled, such as by the ena
 The disabled event is called when the tap behavior is disabled, such as by the disable method.
 
 
-## How to use wuiButtonBehavior to create a button
+## How to use
 
 See the example below:
 
 ```javascript
+var inherits = require('util').inherits;
 var WuiDom = require('WuiDom');
 var wuiButtonBehavior = require('wuiButtonBehavior');
 
-var btn = new WuiDom('div', { text: 'submit', className: 'button' });
-wuiButtonBehavior(btn);
+function Button(label) {
+    WuiDom.call(this, 'div', { text: label, className: 'button' });
+    wuiButtonBehavior(this);
 
-btn.on('tapstart', function () {
-    btn.addClassNames('pressed');
-});
+    this.on('tapstart', function () {
+        this.addClassNames('pressed');
+    });
 
-btn.on('tapend', function () {
-    btn.delClassNames('pressed');
-});
+    this.on('tapend', function () {
+        this.delClassNames('pressed');
+    });
 
-btn.on('disabled', function () {
-    btn.addClassNames('disabled');
-});
+    this.on('disabled', function () {
+        this.addClassNames('disabled');
+    });
 
-btn.on('enabled', function () {
-    btn.delClassNames('disabled');
-});
+    this.on('enabled', function () {
+        this.delClassNames('disabled');
+    });
+}
 
-btn.on('tap', function () {
+inherits(Button, WuiDom);
+
+var button = new Button('My Button');
+
+button.on('tap', function () {
     doSomething();
 });
 ```
