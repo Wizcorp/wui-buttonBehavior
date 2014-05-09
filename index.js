@@ -34,24 +34,23 @@ function setDisableAll(repeatDelay) {
 	}
 }
 
-
-// buttonBehavior is wuiButtonBehavior
-// arguments:
-//   button: a component to turn into a button
-//   options: a map with the following (all optional) properties:
-//     - disabled (boolean):           the button starts as unresponsive (call .enable() to turn it on)
-//     - maxDeviation (int):           the maximum distance in px in both X and Y axis that
-//                                     the finger may move before the tap is cancelled.
-//     - tapDelay (int):               the delay in msec before tap is emitted (disabled by default).
-//     - repeatDelay (int):            the delay before which a button is tappable again (disabled by default).
-//     - isRepeatable (boolean):         the button emits tap events when held down (default: false).
-//     - repeatableInitialDelay (int): the delay in msec before the button begins repeating (default: 500).
-//     - repeatableDelay (int):        the delay in msec for subsequent repeats (default: 200).
-//     - toggle (object):
-//       - values (array):             all values the button can toggle between, which are emitted through the
-//                                     toggle event that fires immediately after the tap event.
-//       - defaultValue (mixed):       the value that the toggle-button starts with.
-
+/**
+ * buttonBehavior is wuiButtonBehavior
+ * @param {WuiDom} button - a component to turn into a button
+ * @param {Object} [options] - a map with the following (all optional) properties:
+ * @param {Boolean} [options.disabled=false] - the button starts as unresponsive (call .enable() to turn it on)
+ * @param {Number} [options.maxDeviation=20] - the maximum distance in px in both X and Y axis that
+ * the finger may move before the tap is cancelled.
+ * @param {Number} [options.tapDelay] - the delay in msec before tap is emitted (disabled by default).
+ * @param {Number} [options.repeatDelay] - the delay before which a button is tappable again (disabled by default).
+ * @param {Boolean} [options.isRepeatable=false] - the button emits tap events when held down (default: false).
+ * @param {Number} [options.repeatableInitialDelay=500] - the delay in msec before the button begins repeating.
+ * @param {Number} [options.repeatableDelay=200] - the delay in msec for subsequent repeats
+ * @param {Object} [options.toggle]
+ * @param {Array} options.toggle.values - all values the button can toggle between, which are emitted through the
+ * toggle event that fires immediately after the tap event.
+ * @param {*} [options.toggle.defaultValue] - the value that the toggle-button starts with (default: first value).
+ */
 function buttonBehavior(button, options) {
 	// parse options
 
@@ -158,6 +157,12 @@ function buttonBehavior(button, options) {
 	};
 
 
+	function cancelTap() {
+		if (current === button) {
+			return button.emit('tapend', true);
+		}
+	}
+
 	button.on('dom.touchstart', function touchstart(domEvent) {
 		if (!isEnabled || disableAll) {
 			return;
@@ -171,12 +176,15 @@ function buttonBehavior(button, options) {
 
 		startPos = getTouchPos(domEvent);
 
+		button.removeListener('dom.mouseleave', cancelTap);
+		button.once('dom.mouseleave', cancelTap);
+
 		button.emit('tapstart');
 	});
 
 
 	button.on('dom.touchmove', function touchmove(domEvent) {
-		if (!isEnabled) {
+		if (!isEnabled || !current) {
 			return;
 		}
 
@@ -197,7 +205,7 @@ function buttonBehavior(button, options) {
 			return;
 		}
 
-		if (current) {
+		if (button === current) {
 			event.preventDefault();
 			button.emit('tapend', false);
 		}
