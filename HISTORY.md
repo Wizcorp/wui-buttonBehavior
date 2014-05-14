@@ -1,6 +1,6 @@
 # Release history
 
-## v0.1.2
+## v0.1.1
 
 ### Mouse can leave too
 `tapend` is getting called to cancel the tap action when mouse is leaving the button.
