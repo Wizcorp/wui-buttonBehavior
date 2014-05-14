@@ -206,7 +206,6 @@ function buttonBehavior(button, options) {
 		}
 
 		if (button === current) {
-			event.preventDefault();
 			button.emit('tapend', false);
 		}
 	});
