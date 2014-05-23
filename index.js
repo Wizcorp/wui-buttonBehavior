@@ -96,7 +96,7 @@ function buttonBehavior(button, options) {
 	// set up button-wide variables and start the Dom event system
 
 	var startPos;
-	var boundingBox;
+	var bounding;
 	var pageOffset;
 	var fnOverride;
 
@@ -132,7 +132,7 @@ function buttonBehavior(button, options) {
 
 			args[0] = 'disabled';
 
-			for (var i = 0; i < argLen; i++) {
+			for (var i = 0; i < argLen; i += 1) {
 				args[i + 1] = arguments[i];
 			}
 
@@ -173,16 +173,8 @@ function buttonBehavior(button, options) {
 
 		startPos = getTouchPos(domEvent);
 
-		var bounding = button.rootElement.getBoundingClientRect();
+		bounding = button.rootElement.getBoundingClientRect();
 		pageOffset = { x: window.pageXOffset, y: window.pageYOffset };
-		boundingBox = {
-			left: bounding.left + pageOffset.x,
-			top: bounding.top + pageOffset.y,
-			right: bounding.left + pageOffset.x + bounding.width,
-			bottom: bounding.top + pageOffset.y + bounding.height,
-			width: bounding.width,
-			height: bounding.height
-		};
 
 		button.removeListener('dom.mouseleave', cancelTap);
 		button.once('dom.mouseleave', cancelTap);
@@ -191,31 +183,37 @@ function buttonBehavior(button, options) {
 
 
 	button.on('dom.touchmove', function touchmove(domEvent) {
-		if (!isEnabled || !current) {
+		if (!isEnabled || !current || !startPos) {
 			return;
 		}
 
-		if (startPos) {
-			var currentPos = getTouchPos(domEvent);
+		// Check if we moved outside the button
 
-			var movedOutHorizontally = boundingBox.left > currentPos.x || currentPos.x > boundingBox.right;
-			var movedOutVertically = boundingBox.top > currentPos.y || currentPos.y > boundingBox.bottom;
+		var currentPos = getTouchPos(domEvent);
+		var left = bounding.left + pageOffset.x;
+		var top = bounding.top + pageOffset.y;
 
-			if (movedOutHorizontally || movedOutVertically) {
-				return button.emit('tapend', true);
-			}
+		var movedOutHorizontally = left > currentPos.x || currentPos.x > left + bounding.width;
+		var movedOutVertically = top > currentPos.y || currentPos.y > top + bounding.height;
 
-			var x = Math.abs(window.pageXOffset - pageOffset.x);
-			var y = Math.abs(window.pageYOffset - pageOffset.y);
-			var scrolledOut = x > boundingBox.width || y > boundingBox.height;
-			if (scrolledOut) {
-				return button.emit('tapend', true);
-			}
+		if (movedOutHorizontally || movedOutVertically) {
+			return button.emit('tapend', true);
 		}
+
+		// Check if we scrolled enough to be virtually outside the button
+
+		var x = Math.abs(window.pageXOffset - pageOffset.x);
+		var y = Math.abs(window.pageYOffset - pageOffset.y);
+
+		var scrolledOut = x > bounding.width || y > bounding.height;
+		if (scrolledOut) {
+			return button.emit('tapend', true);
+		}
+
 	});
 
 
-	button.on('dom.touchend', function touchend(domEvent) {
+	button.on('dom.touchend', function touchend() {
 		if (!isEnabled) {
 			return;
 		}
