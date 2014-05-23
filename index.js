@@ -10,7 +10,7 @@ function getTouchPos(domEvent) {
 	var targetTouch = domEvent.targetTouches ? domEvent.targetTouches[0] : null;
 
 	if (targetTouch) {
-		domEvent = targetTouch
+		domEvent = targetTouch;
 	}
 
 	return { x: domEvent.pageX, y: domEvent.pageY, screenX: domEvent.screenX, screenY: domEvent.screenY };
@@ -197,14 +197,18 @@ function buttonBehavior(button, options) {
 
 		if (startPos) {
 			var currentPos = getTouchPos(domEvent);
-			var x = Math.abs(window.pageXOffset - pageOffset.x);
-			var y = Math.abs(window.pageYOffset - pageOffset.y);
 
 			var movedOutHorizontally = boundingBox.left > currentPos.x || currentPos.x > boundingBox.right;
 			var movedOutVertically = boundingBox.top > currentPos.y || currentPos.y > boundingBox.bottom;
-			var scrolledOut = x > boundingBox.width || y > boundingBox.height;
 
-			if (movedOutHorizontally || movedOutVertically || scrolledOut) {
+			if (movedOutHorizontally || movedOutVertically) {
+				return button.emit('tapend', true);
+			}
+
+			var x = Math.abs(window.pageXOffset - pageOffset.x);
+			var y = Math.abs(window.pageYOffset - pageOffset.y);
+			var scrolledOut = x > boundingBox.width || y > boundingBox.height;
+			if (scrolledOut) {
 				return button.emit('tapend', true);
 			}
 		}
