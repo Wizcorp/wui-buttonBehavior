@@ -1,5 +1,13 @@
 # Release history
 
+## vNext
+
+### Cancel me if you can, but only if you should
+The implementation of cancelling the tap event when moving has been revisited for better support of desktop browser.
+The `maxDeviation` wasn't good enough, now it will detect if the cursor/finger leave the button.
+Also added cancellation when scrolling farther than the button size.
+
+
 ## v0.1.1
 
 ### Mouse can leave too

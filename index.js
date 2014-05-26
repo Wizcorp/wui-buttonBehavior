@@ -10,10 +10,10 @@ function getTouchPos(domEvent) {
 	var targetTouch = domEvent.targetTouches ? domEvent.targetTouches[0] : null;
 
 	if (targetTouch) {
-		return [targetTouch.pageX, targetTouch.pageY];
+		domEvent = targetTouch;
 	}
 
-	return [domEvent.pageX, domEvent.pageY];
+	return { x: domEvent.pageX, y: domEvent.pageY, screenX: domEvent.screenX, screenY: domEvent.screenY };
 }
 
 
@@ -39,8 +39,6 @@ function setDisableAll(repeatDelay) {
  * @param {WuiDom} button - a component to turn into a button
  * @param {Object} [options] - a map with the following (all optional) properties:
  * @param {Boolean} [options.disabled=false] - the button starts as unresponsive (call .enable() to turn it on)
- * @param {Number} [options.maxDeviation=20] - the maximum distance in px in both X and Y axis that
- * the finger may move before the tap is cancelled.
  * @param {Number} [options.tapDelay] - the delay in msec before tap is emitted (disabled by default).
  * @param {Number} [options.repeatDelay] - the delay before which a button is tappable again (disabled by default).
  * @param {Boolean} [options.isRepeatable=false] - the button emits tap events when held down (default: false).
@@ -61,10 +59,6 @@ function buttonBehavior(button, options) {
 	// option: disabled (off by default, can be true in order to disable the button from the start)
 
 	var isEnabled = !options.disabled;
-
-	// option: maxDeviation (20 by default, max N pixels finger movement for a tap to be considered successful)
-
-	var maxDeviation = options.maxDeviation || 20;
 
 	// option: tapDelay (delay in msec after which tap events are emitted)
 
@@ -102,6 +96,8 @@ function buttonBehavior(button, options) {
 	// set up button-wide variables and start the Dom event system
 
 	var startPos;
+	var bounding;
+	var pageOffset;
 	var fnOverride;
 
 	button.allowDomEvents();
@@ -136,7 +132,7 @@ function buttonBehavior(button, options) {
 
 			args[0] = 'disabled';
 
-			for (var i = 0; i < argLen; i++) {
+			for (var i = 0; i < argLen; i += 1) {
 				args[i + 1] = arguments[i];
 			}
 
@@ -163,6 +159,7 @@ function buttonBehavior(button, options) {
 		}
 	}
 
+
 	button.on('dom.touchstart', function touchstart(domEvent) {
 		if (!isEnabled || disableAll) {
 			return;
@@ -176,31 +173,47 @@ function buttonBehavior(button, options) {
 
 		startPos = getTouchPos(domEvent);
 
+		bounding = button.rootElement.getBoundingClientRect();
+		pageOffset = { x: window.pageXOffset, y: window.pageYOffset };
+
 		button.removeListener('dom.mouseleave', cancelTap);
 		button.once('dom.mouseleave', cancelTap);
-
 		button.emit('tapstart');
 	});
 
 
 	button.on('dom.touchmove', function touchmove(domEvent) {
-		if (!isEnabled || !current) {
+		if (!isEnabled || !current || !startPos) {
 			return;
 		}
 
-		if (startPos) {
-			var pos = getTouchPos(domEvent);
-			var x = Math.abs(pos[0] - startPos[0]);
-			var y = Math.abs(pos[1] - startPos[1]);
+		// Check if we moved outside the button
 
-			if (x > maxDeviation || y > maxDeviation) {
-				button.emit('tapend', true);
-			}
+		var currentPos = getTouchPos(domEvent);
+		var left = bounding.left + pageOffset.x;
+		var top = bounding.top + pageOffset.y;
+
+		var movedOutHorizontally = left > currentPos.x || currentPos.x > left + bounding.width;
+		var movedOutVertically = top > currentPos.y || currentPos.y > top + bounding.height;
+
+		if (movedOutHorizontally || movedOutVertically) {
+			return button.emit('tapend', true);
 		}
+
+		// Check if we scrolled enough to be virtually outside the button
+
+		var x = Math.abs(window.pageXOffset - pageOffset.x);
+		var y = Math.abs(window.pageYOffset - pageOffset.y);
+
+		var scrolledOut = x > bounding.width || y > bounding.height;
+		if (scrolledOut) {
+			return button.emit('tapend', true);
+		}
+
 	});
 
 
-	button.on('dom.touchend', function touchend(event) {
+	button.on('dom.touchend', function touchend() {
 		if (!isEnabled) {
 			return;
 		}
