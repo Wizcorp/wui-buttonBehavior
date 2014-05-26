@@ -193,10 +193,13 @@ function buttonBehavior(button, options) {
 		var left = bounding.left + pageOffset.x;
 		var top = bounding.top + pageOffset.y;
 
-		var movedOutHorizontally = left > currentPos.x || currentPos.x > left + bounding.width;
-		var movedOutVertically = top > currentPos.y || currentPos.y > top + bounding.height;
+		var hasMoved =
+			left > currentPos.x ||
+			currentPos.x > left + bounding.width ||
+			top > currentPos.y ||
+			currentPos.y > top + bounding.height;
 
-		if (movedOutHorizontally || movedOutVertically) {
+		if (hasMoved) {
 			return button.emit('tapend', true);
 		}
 

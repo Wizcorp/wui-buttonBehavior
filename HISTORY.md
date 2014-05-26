@@ -1,6 +1,6 @@
 # Release history
 
-## vNext
+## v0.1.2
 
 ### Cancel me if you can, but only if you should
 The implementation of cancelling the tap event when moving has been revisited for better support of desktop browser.
