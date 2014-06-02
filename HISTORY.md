@@ -1,5 +1,14 @@
 # Release history
 
+## vNext
+
+### I care about you deeply
+Changing within the way we care about imbricated buttons. The deepest will be taken.
+
+### Faking is not lying
+Implemented a new method called `tap` to trigger the tap cycle events.
+
+
 ## v0.1.2
 
 ### Cancel me if you can, but only if you should
