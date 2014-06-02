@@ -40,7 +40,7 @@ function setDisableAll(repeatDelay) {
  * @param {Object} [options] - a map with the following (all optional) properties:
  * @param {Boolean} [options.disabled=false] - the button starts as unresponsive (call .enable() to turn it on)
  * @param {Number} [options.tapDelay] - the delay in msec before tap is emitted (disabled by default).
- * @param {Number} [options.repeatDelay] - the delay before which a button is tappable again (disabled by default).
+ * @param {Number} [options.repeatDelay=0] - the delay before which a button can be tappable again.
  * @param {Boolean} [options.isRepeatable=false] - the button emits tap events when held down (default: false).
  * @param {Number} [options.repeatableInitialDelay=500] - the delay in msec before the button begins repeating.
  * @param {Number} [options.repeatableDelay=200] - the delay in msec for subsequent repeats
@@ -64,7 +64,7 @@ function buttonBehavior(button, options) {
 
 	var tapDelay = (typeof options.tapDelay === 'number') ? options.tapDelay : null;
 
-	var repeatDelay = (typeof options.repeatDelay === 'number') ? options.repeatDelay : null;
+	var repeatDelay = (typeof options.repeatDelay === 'number') ? options.repeatDelay : 0;
 
 	var isRepeatable = options.isRepeatable ? options.isRepeatable : false;
 
@@ -169,6 +169,7 @@ function buttonBehavior(button, options) {
 		setActiveButton(button);
 
 		// prevent other buttons to fire during a certain time (repeatDelay)
+		// Also act like an internal stopPropagation
 		setDisableAll(repeatDelay);
 
 		startPos = getTouchPos(domEvent);
@@ -212,7 +213,6 @@ function buttonBehavior(button, options) {
 		if (scrolledOut) {
 			return button.emit('tapend', true);
 		}
-
 	});
 
 
@@ -279,6 +279,12 @@ function buttonBehavior(button, options) {
 			}
 		}
 	});
+
+	// Function to emulate a full tap
+	button.tap = function () {
+		button.emit('tapstart');
+		button.emit('tapend');
+	};
 }
 
 module.exports = buttonBehavior;

@@ -35,6 +35,11 @@ The disable method can be called to prevent tap interaction on the element.
 button.disable();
 ```
 
+### tap
+
+The tap method will trigger the a successful cycle of tap events.
+
+
 ## Events
 
 ### tap
