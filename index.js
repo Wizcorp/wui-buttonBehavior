@@ -223,9 +223,9 @@ function buttonBehavior(button, options) {
 
 		var hasMoved =
 			left > currentPos.x ||
-				currentPos.x > left + bounding.width ||
-				top > currentPos.y ||
-				currentPos.y > top + bounding.height;
+			currentPos.x > left + bounding.width ||
+			top > currentPos.y ||
+			currentPos.y > top + bounding.height;
 
 		if (hasMoved) {
 			return button.emit('tapend', true);
