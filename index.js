@@ -6,6 +6,8 @@ var disableAll = false;
 
 var current = null;
 
+var sameButton = false;
+
 function getTouchPos(domEvent) {
 	var targetTouch = domEvent.targetTouches ? domEvent.targetTouches[0] : null;
 
@@ -16,10 +18,33 @@ function getTouchPos(domEvent) {
 	return { x: domEvent.pageX, y: domEvent.pageY, screenX: domEvent.screenX, screenY: domEvent.screenY };
 }
 
+function checkIsChildren(childButton, parentButton) {
+	var children = parentButton.getChildren();
+	for (var i = 0; i < children.length; i++) {
+		var child = children[i];
 
-function setActiveButton(button) {
+		if (child === childButton) {
+			sameButton = true;
+			break;
+		}
+
+		checkIsChildren(childButton, child);
+	}
+}
+
+
+function setActiveButton(button, propagationDisabled) {
 	if (current) {
-		current.emit('tapend', true);
+		if (!propagationDisabled) {
+			checkIsChildren(current, button);
+
+			if (sameButton) {
+				current.emit('tapend', false);
+				sameButton = false;
+			}
+		} else {
+			current.emit('tapend', true);
+		}
 	}
 
 	current = button;
@@ -74,6 +99,9 @@ function buttonBehavior(button, options) {
 
 	// This holds our repeatable timer so we can cancel it on tapend.
 	var repeatableTimeout;
+
+	// Set propagation disabled to false to allow button in button behaviour, default to true
+	var propagationDisabled = !options.allowPropagation;
 
 	// option: toggle (emits "togggle" event and iterates through given values)
 	// eg: { values: [1,2,3,4], defaultValue: 3 }
@@ -166,7 +194,7 @@ function buttonBehavior(button, options) {
 		}
 
 		// if another button was active, cancel it and make this button the active one
-		setActiveButton(button);
+		setActiveButton(button, propagationDisabled);
 
 		// prevent other buttons to fire during a certain time (repeatDelay)
 		setDisableAll(repeatDelay);
