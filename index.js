@@ -6,6 +6,8 @@ var disableAll = false;
 
 var current = null;
 
+var sameButton = false;
+
 function getTouchPos(domEvent) {
 	var targetTouch = domEvent.targetTouches ? domEvent.targetTouches[0] : null;
 
@@ -16,10 +18,33 @@ function getTouchPos(domEvent) {
 	return { x: domEvent.pageX, y: domEvent.pageY, screenX: domEvent.screenX, screenY: domEvent.screenY };
 }
 
+function checkIsChildren(childButton, parentButton) {
+	var children = parentButton.getChildren();
+	for (var i = 0; i < children.length; i++) {
+		var child = children[i];
+
+		if (child === childButton) {
+			sameButton = true;
+			break;
+		}
+
+		checkIsChildren(childButton, child);
+	}
+}
+
 
 function setActiveButton(button, propagationDisabled) {
 	if (current) {
-		current.emit('tapend', propagationDisabled);
+		if (!propagationDisabled) {
+			checkIsChildren(current, button);
+
+			if (sameButton) {
+				current.emit('tapend', false);
+				sameButton = false;
+			}
+		} else {
+			current.emit('tapend', true);
+		}
 	}
 
 	current = button;
@@ -198,9 +223,9 @@ function buttonBehavior(button, options) {
 
 		var hasMoved =
 			left > currentPos.x ||
-			currentPos.x > left + bounding.width ||
-			top > currentPos.y ||
-			currentPos.y > top + bounding.height;
+				currentPos.x > left + bounding.width ||
+				top > currentPos.y ||
+				currentPos.y > top + bounding.height;
 
 		if (hasMoved) {
 			return button.emit('tapend', true);
