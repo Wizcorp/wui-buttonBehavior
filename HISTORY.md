@@ -1,5 +1,11 @@
 # Release history
 
+## vNext
+
+### About the dark scroll
+Adding a max allowed scrolling value to cancel the tap.
+
+
 ## v0.1.3
 
 ### I care about you deeply
