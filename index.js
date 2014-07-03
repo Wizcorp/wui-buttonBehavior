@@ -72,6 +72,8 @@ function buttonBehavior(button, options) {
 
 	var repeatableDelay = (typeof options.repeatableDelay === 'number') ? options.repeatableDelay : 200;
 
+	var maxScrolling = (typeof options.maxScrolling === 'number') ? options.maxScrolling : 10;
+
 	// This holds our repeatable timer so we can cancel it on tapend.
 	var repeatableTimeout;
 
@@ -188,6 +190,16 @@ function buttonBehavior(button, options) {
 			return;
 		}
 
+		// Check if we scrolled too much
+
+		var x = Math.abs(window.pageXOffset - pageOffset.x);
+		var y = Math.abs(window.pageYOffset - pageOffset.y);
+
+		var scrolledOut = x > maxScrolling || y > maxScrolling;
+		if (scrolledOut) {
+			return button.emit('tapend', true);
+		}
+
 		// Check if we moved outside the button
 
 		var currentPos = getTouchPos(domEvent);
@@ -201,16 +213,6 @@ function buttonBehavior(button, options) {
 			currentPos.y > top + bounding.height;
 
 		if (hasMoved) {
-			return button.emit('tapend', true);
-		}
-
-		// Check if we scrolled enough to be virtually outside the button
-
-		var x = Math.abs(window.pageXOffset - pageOffset.x);
-		var y = Math.abs(window.pageYOffset - pageOffset.y);
-
-		var scrolledOut = x > bounding.width || y > bounding.height;
-		if (scrolledOut) {
 			return button.emit('tapend', true);
 		}
 	});
