@@ -40,7 +40,7 @@ function setDisableAll(repeatDelay) {
  * @param {Object} [options] - a map with the following (all optional) properties:
  * @param {Boolean} [options.disabled=false] - the button starts as unresponsive (call .enable() to turn it on)
  * @param {Number} [options.tapDelay] - the delay in msec before tap is emitted (disabled by default).
- * @param {Number} [options.repeatDelay=0] - the delay before which a button can be tappable again.
+ * @param {Number} [options.repeatDelay] - the delay before which a button is tappable again (disabled by default).
  * @param {Boolean} [options.isRepeatable=false] - the button emits tap events when held down (default: false).
  * @param {Number} [options.repeatableInitialDelay=500] - the delay in msec before the button begins repeating.
  * @param {Number} [options.repeatableDelay=200] - the delay in msec for subsequent repeats
@@ -64,13 +64,15 @@ function buttonBehavior(button, options) {
 
 	var tapDelay = (typeof options.tapDelay === 'number') ? options.tapDelay : null;
 
-	var repeatDelay = (typeof options.repeatDelay === 'number') ? options.repeatDelay : 0;
+	var repeatDelay = (typeof options.repeatDelay === 'number') ? options.repeatDelay : null;
 
 	var isRepeatable = options.isRepeatable ? options.isRepeatable : false;
 
 	var repeatableInitialDelay = (typeof options.repeatableInitialDelay === 'number') ? options.repeatableInitialDelay : 500;
 
 	var repeatableDelay = (typeof options.repeatableDelay === 'number') ? options.repeatableDelay : 200;
+
+	var maxScrolling = (typeof options.maxScrolling === 'number') ? options.maxScrolling : 10;
 
 	// This holds our repeatable timer so we can cancel it on tapend.
 	var repeatableTimeout;
@@ -169,7 +171,6 @@ function buttonBehavior(button, options) {
 		setActiveButton(button);
 
 		// prevent other buttons to fire during a certain time (repeatDelay)
-		// Also act like an internal stopPropagation
 		setDisableAll(repeatDelay);
 
 		startPos = getTouchPos(domEvent);
@@ -188,9 +189,20 @@ function buttonBehavior(button, options) {
 			return;
 		}
 
+		// Check if we scrolled too much
+
+		var x = Math.abs(window.pageXOffset - pageOffset.x);
+		var y = Math.abs(window.pageYOffset - pageOffset.y);
+
+		var scrolledOut = x > maxScrolling || y > maxScrolling;
+		if (scrolledOut) {
+			return button.emit('tapend', true);
+		}
+
 		// Check if we moved outside the button
 
 		var currentPos = getTouchPos(domEvent);
+
 		var left = bounding.left + pageOffset.x;
 		var top = bounding.top + pageOffset.y;
 
@@ -201,16 +213,6 @@ function buttonBehavior(button, options) {
 			currentPos.y > top + bounding.height;
 
 		if (hasMoved) {
-			return button.emit('tapend', true);
-		}
-
-		// Check if we scrolled enough to be virtually outside the button
-
-		var x = Math.abs(window.pageXOffset - pageOffset.x);
-		var y = Math.abs(window.pageYOffset - pageOffset.y);
-
-		var scrolledOut = x > bounding.width || y > bounding.height;
-		if (scrolledOut) {
 			return button.emit('tapend', true);
 		}
 	});
@@ -279,12 +281,6 @@ function buttonBehavior(button, options) {
 			}
 		}
 	});
-
-	// Function to emulate a full tap
-	button.tap = function () {
-		button.emit('tapstart');
-		button.emit('tapend');
-	};
 }
 
 module.exports = buttonBehavior;
