@@ -238,15 +238,15 @@ function buttonBehavior(button, options) {
 	button.on('tapstart', function () {
 		if (isRepeatable) {
 			// We do an initial tap and then wait for the initial delay.
-			button.emit('tap');
 			repeatableTimeout = window.setTimeout(repeatTap, repeatableInitialDelay);
+			button.emit('tap');
 		}
 	});
 
 	function repeatTap() {
 		// Send another tap and wait for the shorter delay.
-		button.emit('tap');
 		repeatableTimeout = window.setTimeout(repeatTap, repeatableDelay);
+		button.emit('tap');
 	}
 
 	button.on('tapend', function (wasCancelled) {

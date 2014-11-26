@@ -1,5 +1,11 @@
 # Release history
 
+## vNext
+
+### Repeat after me: I will stop when asked to
+With the `isRepeatable` option activated, the previous flow allowed to disable the button in between repeats. The
+button would be disabled but would keep on emitting the `tap` event.
+
 ## v0.1.3
 
 ### I care about you deeply
