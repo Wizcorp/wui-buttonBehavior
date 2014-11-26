@@ -74,6 +74,7 @@ function buttonBehavior(button, options) {
 
 	// This holds our repeatable timer so we can cancel it on tapend.
 	var repeatableTimeout;
+	var repeatableInitialTimeout;
 
 	// option: toggle (emits "togggle" event and iterates through given values)
 	// eg: { values: [1,2,3,4], defaultValue: 3 }
@@ -237,9 +238,7 @@ function buttonBehavior(button, options) {
 
 	button.on('tapstart', function () {
 		if (isRepeatable) {
-			// We do an initial tap and then wait for the initial delay.
-			repeatableTimeout = window.setTimeout(repeatTap, repeatableInitialDelay);
-			button.emit('tap');
+			repeatableInitialTimeout = window.setTimeout(repeatTap, repeatableInitialDelay);
 		}
 	});
 
@@ -256,9 +255,15 @@ function buttonBehavior(button, options) {
 		startPos = null;
 
 		if (isRepeatable) {
+			window.clearTimeout(repeatableInitialTimeout);
 			window.clearTimeout(repeatableTimeout);
+
+			if (!repeatableTimeout) {
+				button.emit('tap');
+			}
+
+			repeatableInitialTimeout = null;
 			repeatableTimeout = null;
-			return;
 		}
 
 		if (wasCancelled) {
