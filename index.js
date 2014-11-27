@@ -264,6 +264,7 @@ function buttonBehavior(button, options) {
 
 			repeatableInitialTimeout = null;
 			repeatableTimeout = null;
+			return;
 		}
 
 		if (wasCancelled) {
