@@ -4,6 +4,7 @@
 
 wuiButtonBehavior is a behavior made for WUI. It behaves like an HTML5 button would be expected to.
 Setting the behavior to a [WuiDom](https://github.com/Wizcorp/wui-Dom) would make it able to listen for various events.
+Need at least WuiDom v0.3.0
 
 wuiButtonBehavior will attach methods and events to the WuiDom element;
 

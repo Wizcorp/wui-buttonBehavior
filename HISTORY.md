@@ -1,6 +1,6 @@
 # Release history
 
-## vNext
+## v0.1.4
 
 ### Repeat after me: I will stop when asked to
 With the `isRepeatable` option activated, the previous flow allowed to disable the button in between repeats. The
