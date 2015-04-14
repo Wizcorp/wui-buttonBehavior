@@ -294,3 +294,12 @@ function buttonBehavior(button, options) {
 }
 
 module.exports = buttonBehavior;
+
+/**
+ * Cancel the tap on the current button
+ */
+buttonBehavior.cancel = function () {
+	if (current) {
+		current.emit('tapend', true);
+	}
+};
