@@ -1,5 +1,8 @@
 # Release history
 
+## vNext Let's cancel for now
+Added a method on the behavior to cancel the `tap` on the current button.
+
 ## v0.1.4
 
 ### Repeat after me: I will stop when asked to
