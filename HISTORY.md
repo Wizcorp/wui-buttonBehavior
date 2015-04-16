@@ -1,13 +1,17 @@
 # Release history
 
-## vNext Let's cancel for now
+## v0.1.5
+
+###  Let's cancel for now
 Added a method on the behavior to cancel the `tap` on the current button.
+
 
 ## v0.1.4
 
 ### Repeat after me: I will stop when asked to
 With the `isRepeatable` option activated, the previous flow allowed to disable the button in between repeats. The
 button would be disabled but would keep on emitting the `tap` event.
+
 
 ## v0.1.3
 

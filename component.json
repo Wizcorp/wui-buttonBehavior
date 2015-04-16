@@ -1,7 +1,7 @@
 {
 	"name": "wuiButtonBehavior",
 	"repo": "Wizcorp/wui-buttonBehavior",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Generic button wui behavior",
 	"scripts": [
 		"index.js"
