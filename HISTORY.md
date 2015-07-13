@@ -1,5 +1,11 @@
 # Release history
 
+## v0.2.0
+
+### Let's meet the world
+Added more compatibility through package.json
+
+
 ## v0.1.5
 
 ###  Let's cancel for now

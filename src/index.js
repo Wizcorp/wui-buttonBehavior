@@ -68,7 +68,8 @@ function buttonBehavior(button, options) {
 
 	var isRepeatable = options.isRepeatable ? options.isRepeatable : false;
 
-	var repeatableInitialDelay = (typeof options.repeatableInitialDelay === 'number') ? options.repeatableInitialDelay : 500;
+	var repeatableInitialDelay =
+		(typeof options.repeatableInitialDelay === 'number') ? options.repeatableInitialDelay : 500;
 
 	var repeatableDelay = (typeof options.repeatableDelay === 'number') ? options.repeatableDelay : 200;
 

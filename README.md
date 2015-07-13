@@ -1,10 +1,10 @@
 # wuiButtonBehavior
+[![Circle CI](https://circleci.com/gh/WizUI/wuiButtonBehavior/tree/master.svg?style=svg)](https://circleci.com/gh/WizUI/wuiButtonBehavior/tree/master)
 
 ## What it is
 
-wuiButtonBehavior is a behavior made for WUI. It behaves like an HTML5 button would be expected to.
-Setting the behavior to a [WuiDom](https://github.com/Wizcorp/wui-Dom) would make it able to listen for various events.
-Need at least WuiDom v0.3.0
+wuiButtonBehavior is a behavior made for [WizUI]. It behaves like an HTML5 button would be expected to.
+Setting the behavior to a [WuiDom] would make it able to listen for various events.
 
 wuiButtonBehavior will attach methods and events to the WuiDom element;
 
@@ -110,3 +110,6 @@ button.on('tap', function () {
     doSomething();
 });
 ```
+
+[WizUI]: http://wizui.github.com "WizUI"
+[WuiDom]: https://github.com/WizUI/WuiDom "WuiDom"
